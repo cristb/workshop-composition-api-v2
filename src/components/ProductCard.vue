@@ -1,15 +1,13 @@
-<script>
+<script setup>
 import ProductRating from "./ProductRating.vue";
 
-export default {
-  props: {
-    product: Object,
-  },
-  components: { ProductRating },
-};
+const props = defineProps({product: Object});
+console.log(props.product);
 </script>
+
 <template>
   <div class="w-full max-w-sm bg-white rounded-lg shadow-md">
+    --{{ props.product.title }} -- {{ product.title }}--
     <a href="#">
       <img
         class="p-8 rounded-t-lg object-contain h-56 object-center w-full"
