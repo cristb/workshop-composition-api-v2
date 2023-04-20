@@ -2,29 +2,24 @@
 import { ref, computed } from "vue";
 import ProductCard from "./components/ProductCard.vue";
 import { useFetch } from "./composables/useFetch";
+import { useSort } from "./composables/useSort";
+
+const query = ref("phone");
+const url = computed(() => `https://dummyjson.com/products/search?q=${query.value}`);
 
 // loading products
-const numberOfProducts = computed(() => products.value.length);
-
-const { data, loading } = useFetch(
-  "https://dummyjson.com/products?limit=10000"
-);
+const { data, loading } = useFetch(url);
 const products = computed(() => data.value?.products || []);
+const numberOfProducts = computed(() => products.value.length);
 
 // ordering products
 const orderBy = ref("price");
 const desc = ref(false);
-const orderedProducts = computed(() => {
-  const cloned = JSON.parse(JSON.stringify(products.value));
-  return cloned.sort((a, b) => {
-    return desc.value
-      ? b[orderBy.value] - a[orderBy.value]
-      : a[orderBy.value] - b[orderBy.value];
-  });
-});
+const { sorted: orderedProducts } = useSort(products, orderBy, desc);
 </script>
 
 <template>
+  {{ url }}
   <div v-if="loading">loading...</div>
   <div v-else>
     <h1 class="text-2xl mb-5">Products ({{ numberOfProducts }})</h1>
@@ -39,6 +34,7 @@ const orderedProducts = computed(() => {
         Descending
       </label>
     </label>
+    <input type="text" class="input-url" size="40" v-model="query" />
 
     <ul class="flex gap-4 flex-wrap flex-grow justify-center">
       <ProductCard
@@ -54,5 +50,8 @@ const orderedProducts = computed(() => {
 <style>
 body {
   padding: 30px;
+}
+.input-url {
+  border: 1px solid black;
 }
 </style>
